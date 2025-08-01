@@ -2,7 +2,7 @@ import uuid
 from typing import Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Cookie, Response, BackgroundTasks
-from sqlalchemy.orm import session
+from sqlalchemy.orm import Session
 from db.database import get_db, session_local
 from models.story import Story, StoryNode
 from models.job import StoryJob
@@ -17,7 +17,7 @@ def get_session_id(session_id: Optional[str] = Cookie(None)):
     return session_id
 
 @router.post("/create", response_model=StoryJobResponse)
-def create_story(request: CreateStoryRequest, background_tasks:BackgroundTasks, response:Response, session_id: str = Depends(get_session_id), db: session = Depends(get_db)):
+def create_story(request: CreateStoryRequest, background_tasks:BackgroundTasks, response:Response, session_id: str = Depends(get_session_id), db: Session = Depends(get_db)):
     response.set_cookie(key="session_id", value=session_id, httponly=True)
 
     job_id = str(uuid.uuid4())
@@ -64,7 +64,7 @@ def generate_story_task(job_id: str, theme:str, session_id:str):
         db.close()
 
 @router.get("/{story_id}/complete", response_model=CompleteStoryResponse)
-def get_complete_story(story_id:int , db: session = Depends(get_db)):
+def get_complete_story(story_id:int , db: Session = Depends(get_db)):
     story = db.query(Story).filter(Story.id == story_id).first()
     if not story:
         raise HTTPException(status_code=404, detail="Story not found!")
@@ -73,5 +73,5 @@ def get_complete_story(story_id:int , db: session = Depends(get_db)):
     complete_story = build_complete_story_tree(db, story)
     return story
 
-def build_complete_story_tree(db:session, story:Story) -> CompleteStoryResponse:
+def build_complete_story_tree(db:Session, story:Story) -> CompleteStoryResponse:
     pass
