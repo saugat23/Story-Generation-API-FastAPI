@@ -70,6 +70,8 @@ def get_complete_story(story_id:int , db: session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Story not found!")
     
     #parse story
+    complete_story = build_complete_story_tree(db, story)
     return story
 
-def build_complete_story_tree()
+def build_complete_story_tree(db:session, story:Story) -> CompleteStoryResponse:
+    pass
