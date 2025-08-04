@@ -37,7 +37,7 @@ def create_story(request: CreateStoryRequest, background_tasks:BackgroundTasks, 
     return job
 
 def generate_story_task(job_id: str, theme:str, session_id:str):
-    db = session_local
+    db = session_local()
 
     try:
         job = db.query(StoryJob).filter(StoryJob.job_id == job_id).first()
