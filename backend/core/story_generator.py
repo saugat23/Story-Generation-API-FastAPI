@@ -28,3 +28,18 @@ class StoryGenerator:
                 f"Create the story with this theme : {theme}"
             )
         ]).partial(format_instructions=story_parser.get_format_instructions())
+
+        raw_response = llm.invoke(prompt.invoke({}))
+
+        response_text = raw_response
+
+        if hasattr(raw_response, "content"):
+            response_text = raw_response.content
+
+        story_structure = story_parser.parse(response_text)
+        story_db = Story(title=story_structure.title, session_id=session_id)
+        db.add(story_db)
+        db.flush()
+
+        root_node_data = story_structure.rootNode
+        
