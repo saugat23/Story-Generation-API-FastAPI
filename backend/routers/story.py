@@ -9,6 +9,8 @@ from models.job import StoryJob
 from schemas.story import CompleteStoryNodeResponse, CompleteStoryResponse, CreateStoryRequest
 from schemas.job import StoryJobResponse
 
+from core.story_generator import StoryGenerator
+
 router = APIRouter(prefix="/stories", tags=["stories"])
 
 def get_session_id(session_id: Optional[str] = Cookie(None)):
@@ -49,8 +51,8 @@ def generate_story_task(job_id: str, theme:str, session_id:str):
             job.status = "processing"
             db.commit()
 
-            story = {}
-            job.story_id = 1 #TODO:update story
+            story = StoryGenerator.generate_story(theme)
+            job.story_id = story.id #TODO:update story
             job.status = "completed"
             job.completed_at = datetime.now()
             db.commit()
